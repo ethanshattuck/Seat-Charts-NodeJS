@@ -27,6 +27,7 @@
 			</div>
 		</div>
 	</div>
+
 	<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script src="/jQuery-Seat-Charts/jquery.seat-charts.js"></script>
 
@@ -112,14 +113,36 @@
 			
 				
 				$('#selected-seats').on('click', '.cancel-cart-item', function () {
-				
-				sc.get($(this).parents('li:first').data('seatId')).click();
+					sc.get($(this).parents('li:first').data('seatId')).click();
 				});
 			
 				
 				//sc.get(['1_2', '4_1', '7_1', '7_2']).status('unavailable');
-			
+				
+				$(".checkout-button").click(function(){
+					var ids = [];
+					var seats = [];
+					sc.find('selected').each(function () {
+						//alert(this.settings.label);
+						ids.push(this.settings.label);
+						seats.push(this.settings.id);
+
+					});
+
+					if (ids.toString().length && $total.text().length)
+					{
+						$.post("/", {cart: $total.text(), nums: ids.toString()}, updateSeats(sc, seats));
+					}
+				})
+
 			});
+
+			function updateSeats(sc, seats) {
+				$('#selected-seats').empty();
+				$('#counter').empty();
+				$('#total').empty();
+				sc.get(seats).status('unavailable');
+			}
 			
 			function recalculateTotal(sc) {
 			var total = 0;
